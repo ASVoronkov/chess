@@ -1,4 +1,4 @@
-public class Rook extends ChessPiece{
+public class Rook extends ChessPiece {
     public Rook(String color) {
         super(color);
     }
@@ -10,8 +10,11 @@ public class Rook extends ChessPiece{
 
     @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-        return (chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) && (line == toLine && column != toColumn)) ||
-                (chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) && (line != toLine && column == toColumn));
+        if ((chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) && chessBoard.checkPos(line) && chessBoard.checkPos(column))&&
+                ((line == toLine && column != toColumn)) || (line != toLine && column == toColumn))
+            return chessBoard.board[toLine][toColumn] == null ||
+                    !chessBoard.board[toLine][toColumn].getColor().equals(this.color);
+        return false;
     }
 
     @Override

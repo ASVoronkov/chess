@@ -12,33 +12,15 @@ public class Horse extends ChessPiece {
 
     @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-         if (chessBoard.checkPos(line) && chessBoard.checkPos(column) && chessBoard.checkPos(toLine) &&
-                chessBoard.checkPos(toColumn)) {
-            if (line != toLine && column != toColumn &&
-                    (chessBoard.board[toLine][toColumn] == null ||
-                            chessBoard.board[toLine][toColumn].color.equals(this.color))
-                    && chessBoard.board[line][column] != null) {
-                if (!chessBoard.board[line][column].equals(this)) {
-                    return true;
-                }
-
-
-                int[][] positions = new int[][]{
-                        {-2, -1}, {-2, +1},
-                        {+2, -1}, {+2, +1},
-                        {-1, -2}, {-1, +2},
-                        {+1, -2}, {+1, +2},
-                };
-                for (int i = 0; i < positions.length; i++) {
-                    if (positions[i][0] == toLine && positions[i][1] == toColumn) {
-                        return true;
-                    }
-                }
-            }
-        } else return false;
-        return true;
+        if ((chessBoard.checkPos(line) && chessBoard.checkPos(toLine) &&
+                chessBoard.checkPos(column) && chessBoard.checkPos(toColumn)) &&
+                (line != toLine && column != toColumn) &&
+                ((Math.abs(toLine - line) == 2) && (Math.abs(toColumn - column) == 1)) ||
+                ((Math.abs(toLine - line) == 1) && (Math.abs(toColumn - column) == 2)))
+            return chessBoard.board[toLine][toColumn] == null ||
+                    !chessBoard.board[toLine][toColumn].getColor().equals(this.color);
+      return false;
     }
-
     @Override
     public String getSymbol() {
         return "H";

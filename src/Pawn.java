@@ -11,37 +11,30 @@ public class Pawn extends ChessPiece {
 
     @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-        if (chessBoard.checkPos(line) && chessBoard.checkPos(column) && chessBoard.board[line][column] != null &&
-                chessBoard.checkPos(toColumn)) {
+        if (chessBoard.checkPos(line) && chessBoard.checkPos(toLine) &&
+                chessBoard.checkPos(column) && chessBoard.checkPos(toColumn) &&
+                chessBoard.board[line][column] != null && line !=toLine) { // check board and piece
             if (column == toColumn) {
-                int dir;
-                int start;
-                if (color.equals("White")) {
-                    dir = 1;
-                    start = 1;
-                } else {
-                    dir = -1;
-                    start = 6;
-                }
-                if (line + dir == toLine) {
+                if (Math.abs(toLine - line) == 1) {
                     return chessBoard.board[toLine][toColumn] == null;
+                } else if (Math.abs(toLine - line) == 2) {
+                    if (line == 1 && chessBoard.board[line][column].color.equals("White")) {
+                        return chessBoard.board[2][column] == null && chessBoard.board[3][column] == null;
+                    } else if (line == 6 && chessBoard.board[line][column].color.equals("Black")) {
+                        return chessBoard.board[5][column] == null && chessBoard.board[4][column] == null; //
+                    }
                 }
-                if (line == start && line + 2 * dir == toLine) {
-                    return chessBoard.board[toLine][toColumn] == null && chessBoard.board[line + dir][toColumn] == null;
-                }
-            } else {
-                if ((column - toColumn == 1 || column - toColumn == -1) && (line - toColumn == 2 || line - toColumn == -1) &&
-                        chessBoard.board[line][column] != null) {
-                    return !chessBoard.board[toLine][toColumn].getColor().equals(color);
-                } else return false;
             }
+            else if(Math.abs(toColumn - column) == 1){   //can eat
+                if(!chessBoard.board[line][column].color.equals(chessBoard.board[toLine][toColumn].color))
+                {return Math.abs(toLine - line) == 1;}
+            } else return false;
         }
         return false;
     }
-
-
     @Override
     public String getSymbol() {
         return "P";
     }
 }
+

@@ -10,20 +10,20 @@ public class King extends ChessPiece{
 
     @Override
     public boolean canMoveToPosition(ChessBoard chessBoard, int line, int column, int toLine, int toColumn) {
-       return //первая проверка это ход по вертикали и диагонали
-               ((chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
-                (line == toLine && column != toColumn)) ||
-                (chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
-                        (line != toLine && column == toColumn))
-                ||
-                // проверка диагонали
-                chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
-                        (line != toLine && column != toColumn) &&
-                        (Math.abs(toLine - line) == Math.abs(toColumn - column))) &&
-               // проверка, что на одно поле не более
-                       ((Math.abs(toColumn - column)<= 1 && (Math.abs(toLine - column) <=1)));
-
+       if (((chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
+               (line == toLine && column != toColumn)) ||
+               (chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
+                       (line != toLine && column == toColumn))
+               ||
+               chessBoard.checkPos(toLine) && chessBoard.checkPos(toColumn) &&
+                       (line != toLine && column != toColumn) &&
+                       (Math.abs(toLine - line) == Math.abs(toColumn - column))) &&
+               ((Math.abs(toColumn - column)<= 1 && (Math.abs(toLine - column) <=1))))
+           return chessBoard.board[toLine][toColumn] == null ||
+                   !chessBoard.board[toLine][toColumn].getColor().equals(this.color);
+        return false;
     }
+
     public boolean isUnderAttack(ChessBoard chessBoard, int line, int column) {
         if (checkPos(line) && checkPos(column)) {
             for (int i = 0; i < 7; i++) {

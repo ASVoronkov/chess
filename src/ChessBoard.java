@@ -130,4 +130,5 @@ public class ChessBoard {
             } else return false;
         }
     }
+
 }
