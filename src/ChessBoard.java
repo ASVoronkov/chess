@@ -1,5 +1,7 @@
+import java.util.Scanner;
+
 public class ChessBoard {
-    public ChessPiece[][] board = new ChessPiece[8][8]; // creating a field for game
+    public ChessPiece[][] board = new ChessPiece[8][8]; // создание поля для игры
     String nowPlayer;
 
     public ChessBoard(String nowPlayer) {
@@ -10,22 +12,56 @@ public class ChessBoard {
         return this.nowPlayer;
     }
 
-    public boolean moveToPosition(int startLine, int startColumn, int endLine, int endColumn) {
-        if (checkPos(startLine) && checkPos(startColumn)) { // check board borders
-
-            if (!nowPlayer.equals(board[startLine][startColumn].getColor())) return false; // check color
-
-            if (board[startLine][startColumn].canMoveToPosition(this, startLine, startColumn, endLine, endColumn)) {
-                board[endLine][endColumn] = board[startLine][startColumn]; // if piece can move, we moved a piece
-                board[startLine][startColumn] = null; // set null to previous cell
-                this.nowPlayer = this.nowPlayerColor().equals("White") ? "Black" : "White";
-
-                return true;
-            } else return false;
-        } else return false;
+    public void createNewPiece(int line, int column, int toLine, int toColumn) {
+        System.out.println("Пешка достигла последней линии. Введите фигуру для превращения (Q, R, B, H):");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.next();
+        ChessPiece newPiece;
+        switch (choice.toUpperCase()) {
+            case "Q":
+                newPiece = new Queen(board[line][column].getColor());
+                break;
+            case "R":
+                newPiece = new Rook(board[line][column].getColor());
+                break;
+            case "B":
+                newPiece = new Bishop(board[line][column].getColor());
+                break;
+            case "H":
+                newPiece = new Horse(board[line][column].getColor());
+                break;
+            default:
+                System.out.println("Неверный выбор. Пешка не превращена.");
+                return;
+        }
+        board[toLine][toColumn] = newPiece; // установка новой фигуры на целевой клетке
+        board[line][column] = null; // удаление пешки с исходной клетки
     }
 
-    public void printBoard() {  //print board in console
+    public boolean moveToPosition(int line, int column, int toLine, int toColumn) {
+        if (checkPos(line) && checkPos(column) && checkPos(toLine) && checkPos(toColumn)) { // проверка границ доски
+            if (board[line][column] == null) return false; // проверка, что на исходной позиции есть фигура
+            if (!nowPlayer.equals(board[line][column].getColor())) return false; // проверка цвета фигуры
+            if (board[line][column].canMoveToPosition(this, line, column, toLine, toColumn)) {
+                // обработка превращения пешки
+                if (board[line][column] instanceof Pawn && (toLine == 0 || toLine == 7)) {
+                    createNewPiece(line, column, toLine, toColumn);
+                } else {
+                    board[toLine][toColumn] = board[line][column]; // если фигура может двигаться, перемещаем её
+                    board[line][column] = null; // установка null на предыдущей клетке
+                }
+                // смена хода
+                this.nowPlayer = this.nowPlayerColor().equals("White") ? "Black" : "White";
+                return true;
+            } else {
+                return false; // фигура не может двигаться на указанную позицию
+            }
+        } else {
+            return false; // указанные координаты вне границ доски
+        }
+    }
+
+    public void printBoard() {  // печать доски в консоль
         System.out.println("Turn " + nowPlayer);
         System.out.println();
         System.out.println("Player 2(Black)");
@@ -45,11 +81,14 @@ public class ChessBoard {
             System.out.println();
         }
         System.out.println("Player 1(White)");
+
     }
 
     public boolean checkPos(int pos) {
         return pos >= 0 && pos <= 7;
     }
+
+
     public boolean castling0() {
         if (nowPlayer.equals("White")) {
             if (board[0][0] == null || board[0][4] == null) return false;
@@ -123,6 +162,20 @@ public class ChessBoard {
                 } else return false;
             } else return false;
         }
+    }
+
+
+    public boolean isUnderAttack(int line, int column) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if(board[i][j] != null && !board[i][j].getColor().equals(nowPlayer)){
+                    if (board[i][j].canMoveToPosition(this,line,column,i,j)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }
